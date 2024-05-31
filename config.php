@@ -3,5 +3,5 @@ return [
   'host' => 'localhost',
   'user' => 'root',
   'password' => '',
-  'database' => 'CreativeWallet'
+  'database' => 'creative_wallet'
 ];
