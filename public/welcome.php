@@ -1,6 +1,21 @@
 <?php
 session_start();
 
+if (!(isset($_SESSION['success_reg']))) {
+  header('Location: index.php');
+  exit();
+} else {
+  unset($_SESSION['success_reg']);
+}
+
+if (isset($_SESSION['m_username'])) unset($_SESSION['m_username']);
+if (isset($_SESSION['m_email'])) unset($_SESSION['m_email']);
+if (isset($_SESSION['m_password1'])) unset($_SESSION['m_password1']);
+if (isset($_SESSION['m_password2'])) unset($_SESSION['m_password2']);
+
+if (isset($_SESSION['e_username'])) unset($_SESSION['e_username']);
+if (isset($_SESSION['e_email'])) unset($_SESSION['e_email']);
+if (isset($_SESSION['e_password'])) unset($_SESSION['e_password']);
 ?>
 
 <!DOCTYPE html>
