@@ -53,7 +53,6 @@ if (isset($_POST['email'])) {
     if ($existEmail) {
       $isCorrect = false;
       $_SESSION['e_email'] = "Account with this email address already exists";
-      $_SESSION['m_email'] = $email;
     } else {
       if ($isCorrect) {
         $query = $db->prepare('INSERT INTO users VALUES (NULL, :username, :email, :password)');
@@ -61,8 +60,10 @@ if (isset($_POST['email'])) {
         $query->bindValue(':email', $email, PDO::PARAM_STR);
         $query->bindValue(':password', $password, PDO::PARAM_STR);
         $query->execute();
+
+        $_SESSION['success_reg'] = true;
+        header('Location: welcome.php');
       }
-      unset($_SESSION['email_exist']);
     }
   }
 }
@@ -78,13 +79,6 @@ if (isset($_POST['email'])) {
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous" />
   <link rel="stylesheet" href="../style.css" />
-  <style>
-    .error {
-      color: red;
-      font-size: 13px;
-      text-align: left;
-    }
-  </style>
 </head>
 
 <body>
@@ -130,7 +124,7 @@ if (isset($_POST['email'])) {
             </div>
             <?php
             if (isset($_SESSION['e_username'])) {
-              echo '<div class="error">' . $_SESSION['e_username'] . '</div>';
+              echo '<div class="text-danger text-start small">' . $_SESSION['e_username'] . '</div>';
               unset($_SESSION['e_username']);
             }
             ?>
@@ -153,7 +147,7 @@ if (isset($_POST['email'])) {
             </div>
             <?php
             if (isset($_SESSION['e_email'])) {
-              echo '<div class="error">' . $_SESSION['e_email'] . '</div>';
+              echo '<div class="text-danger text-start small">' . $_SESSION['e_email'] . '</div>';
               unset($_SESSION['e_email']);
             }
             ?>
@@ -176,7 +170,7 @@ if (isset($_POST['email'])) {
             </div>
             <?php
             if (isset($_SESSION['e_password1'])) {
-              echo '<div class="error">' . $_SESSION['e_password1'] . '</div>';
+              echo '<div class="text-danger text-start small">' . $_SESSION['e_password1'] . '</div>';
               unset($_SESSION['e_password1']);
             }
             ?>
@@ -199,7 +193,7 @@ if (isset($_POST['email'])) {
             </div>
             <?php
             if (isset($_SESSION['e_password2'])) {
-              echo '<div class="error">' . $_SESSION['e_password2'] . '</div>';
+              echo '<div class="text-danger text-start small">' . $_SESSION['e_password2'] . '</div>';
               unset($_SESSION['e_password2']);
             }
             ?>
