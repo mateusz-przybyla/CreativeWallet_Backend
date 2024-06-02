@@ -84,7 +84,7 @@ if (isset($_POST['email'])) {
 <body>
   <div class="bg-cream h-100 pt-2 position-relative">
     <header>
-      <nav class="navbar navbar-expand-md navbar-dark bg-dark w-lg-75 px-lg-3 mx-2 mx-lg-auto rounded-3" aria-label="toggle navigation">
+      <nav class="navbar navbar-dark bg-dark px-lg-3 mx-2 rounded-3" aria-label="toggle navigation">
         <div class="container">
           <a class="navbar-brand" href="#">
             <svg xmlns="http://www.w3.org/2000/svg" height="30" fill="currentColor" class="bi bi-wallet-fill me-1 mb-1" viewBox="0 0 16 16">
@@ -100,8 +100,8 @@ if (isset($_POST['email'])) {
       </nav>
     </header>
     <main class="pb-75">
-      <div class="container my-5 w-lg-75 px-2 px-sm-0">
-        <div class="shadow p-5 text-center bg-light-red rounded-3">
+      <div class="container my-5">
+        <div class="bg-light-red shadow p-5 text-center rounded-3">
           <form class="w-lg-50 mx-auto" method="post">
             <img class="mb-2" src="../assets/svg/person-plus-fill.svg" alt="person-plus-fill" height="70" />
             <h1 class="h3 mb-4">Sign up</h1>
@@ -209,7 +209,7 @@ if (isset($_POST['email'])) {
       </div>
     </main>
     <footer class="position-absolute w-100 bottom-0">
-      <div class="bg-grey-blue w-lg-75 px-lg-3 mx-2 mx-lg-auto rounded-top-3">
+      <div class="bg-grey-blue mx-2 rounded-top-3">
         <div class="container">
           <div class="row d-flex justify-content-between align-items-center">
             <div class="col-md-4 d-flex justify-content-center justify-content-md-start">

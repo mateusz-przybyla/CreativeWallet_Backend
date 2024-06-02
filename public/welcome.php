@@ -1,13 +1,13 @@
 <?php
 session_start();
-
+/*
 if (!(isset($_SESSION['success_reg']))) {
   header('Location: ../index.php');
   exit();
 } else {
   unset($_SESSION['success_reg']);
 }
-
+*/
 if (isset($_SESSION['m_username'])) unset($_SESSION['m_username']);
 if (isset($_SESSION['m_email'])) unset($_SESSION['m_email']);
 if (isset($_SESSION['m_password1'])) unset($_SESSION['m_password1']);
@@ -33,8 +33,8 @@ if (isset($_SESSION['e_password'])) unset($_SESSION['e_password']);
 <body>
   <div class="bg-cream h-100 pt-2 position-relative">
     <header>
-      <nav class="navbar navbar-dark bg-dark px-lg-3 mx-2 rounded-3" aria-label="toggle navigation">
-        <div class="container px-sm-0">
+      <nav class="navbar navbar-dark bg-dark mx-2 rounded-3" aria-label="toggle navigation">
+        <div class="container">
           <a class="navbar-brand" href="#">
             <svg xmlns="http://www.w3.org/2000/svg" height="30" fill="currentColor" class="bi bi-wallet-fill me-1 mb-1" viewBox="0 0 16 16">
               <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v2h6a.5.5 0 0 1 .5.5c0 .253.08.644.306.958.207.288.557.542 1.194.542s.987-.254 1.194-.542C9.42 6.644 9.5 6.253 9.5 6a.5.5 0 0 1 .5-.5h6v-2A1.5 1.5 0 0 0 14.5 2z" />
@@ -49,14 +49,14 @@ if (isset($_SESSION['e_password'])) unset($_SESSION['e_password']);
       </nav>
     </header>
     <main class="pb-75">
-      <div class="container my-5 px-sm-0">
+      <div class="container my-5">
         <div class="bg-light-red shadow p-5 text-center rounded-3">
           <img src="../assets/svg/check2-square.svg" alt="graph-up-arrow" height="70" class="mb-3" />
           <h1 class="text-body-emphasis py-3 display-5">
             Success!
           </h1>
           <hr />
-          <p class="mx-auto fs-3 py-2">
+          <p class="col-lg-8 mx-auto fs-3 py-2">
             <strong>Congratulations, your account has been successfully created.</strong>
           </p>
           <a class="btn btn-success btn-lg px-5" href="./public/login.php">Sign in</a>
@@ -64,8 +64,8 @@ if (isset($_SESSION['e_password'])) unset($_SESSION['e_password']);
       </div>
     </main>
     <footer class="position-absolute w-100 bottom-0">
-      <div class="bg-grey-blue px-lg-3 mx-2 rounded-top-3">
-        <div class="container px-sm-0">
+      <div class="bg-grey-blue mx-2 rounded-top-3">
+        <div class="container">
           <div class="row d-flex justify-content-between align-items-center">
             <div class="col-md-4 d-flex justify-content-center justify-content-md-start">
               <p class="my-2">© 2024 CreativeWallet</p>
