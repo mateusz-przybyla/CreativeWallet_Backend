@@ -1,13 +1,13 @@
 <?php
 session_start();
-/*
+
 if (!(isset($_SESSION['success_reg']))) {
   header('Location: ../index.php');
   exit();
 } else {
   unset($_SESSION['success_reg']);
 }
-*/
+
 if (isset($_SESSION['m_username'])) unset($_SESSION['m_username']);
 if (isset($_SESSION['m_email'])) unset($_SESSION['m_email']);
 if (isset($_SESSION['m_password1'])) unset($_SESSION['m_password1']);
@@ -59,7 +59,7 @@ if (isset($_SESSION['e_password'])) unset($_SESSION['e_password']);
           <p class="col-lg-8 mx-auto fs-3 py-2">
             <strong>Congratulations, your account has been successfully created.</strong>
           </p>
-          <a class="btn btn-success btn-lg px-5" href="./public/login.php">Sign in</a>
+          <a class="btn btn-success btn-lg px-5" href="login.php">Sign in</a>
         </div>
       </div>
     </main>
