@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+if (!isset($_SESSION['logged_id'])) {
+  header('Location: ../index.php');
+  exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,16 +43,16 @@ session_start();
                 <a class="nav-link disabled" href="#">Add income</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="./add-expense.html">Add expense</a>
+                <a class="nav-link" href="./add-expense.php">Add expense</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="./show-balance.html">Show balance</a>
+                <a class="nav-link" href="./show-balance.php">Show balance</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
                 <a class="nav-link disabled" href="#">Settings</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="../index.html">Logout</a>
+                <a class="nav-link" href="./logout.php">Logout</a>
               </li>
             </ul>
           </div>
@@ -57,10 +61,18 @@ session_start();
     </header>
     <main class="pb-75">
       <div class="container my-5">
-        <div class="bg-light-red shadow p-5 rounded-3">
-          <div class="text-center">
-            <h1 class="h3 mb-4">This section is under construction</h1>
-          </div>
+        <div class="bg-light-red shadow p-5 rounded-3 text-center">
+          <img src="../assets/svg/person-circle.svg" alt="person-circle" height="70" class="mb-3" />
+          <h1 class="text-body-emphasis py-3 display-5">
+            Welcome <?php echo $_SESSION['logged_username'] . "!" ?>
+          </h1>
+          <hr />
+          <p class="col-lg-8 mx-auto fs-3 py-2">
+            <strong>What do you want to change about your finances today?</strong>
+          </p>
+          <p class="col-lg-8 mx-auto fs-5">
+            Your account balance is: (value is under constraction)
+          </p>
         </div>
       </div>
     </main>
