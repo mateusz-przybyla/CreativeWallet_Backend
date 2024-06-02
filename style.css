@@ -50,11 +50,6 @@ caption {
   text-align: center;
 }
 
-.error {
-  color: red;
-  font-size: 8px;
-}
-
 @media (min-width: 992px) {
   .w-lg-50 {
     width: 50% !important;
