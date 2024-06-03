@@ -1,6 +1,44 @@
 <?php
 session_start();
 
+require_once '../database.php';
+
+if (!isset($_SESSION['logged_id'])) {
+  header('Location: ../index.php');
+  exit();
+} else {
+  if (isset($_POST['amount'])) {
+    $isCorrect = true;
+
+    $rawAmount = filter_input(INPUT_POST, 'amount');
+    $amount = number_format($rawAmount, 2, ".", "");
+
+    if (!is_numeric($amount) || ($amount <= 0)) {
+      $isCorrect = false;
+      $_SESSION['e_amount'] = "Username must be between 3 and 20 characters long";
+    }
+
+    echo "Kwota: " . $amount . "<br>";
+
+    $date = filter_input(INPUT_POST, 'date');
+
+    function validateDate($date, $format)
+    {
+      $d = DateTime::createFromFormat($format, $date);
+      return $d && $d->format($format) == $date;
+    }
+
+    $today = date('Y-m-d');
+    echo "Dzisiaj: " . $today . "<br>";
+
+    if (!validateDate($date, 'Y-m-d') || ($date > $today)) {
+      $isCorrect = false;
+      $_SESSION['e_date'] = "Username must be between 3 and 20 characters long";
+    }
+
+    echo "Data: " . $date . "<br>";
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -62,19 +100,19 @@ session_start();
             <h1 class="h3 mb-4">Please enter data for new Expense:</h1>
           </div>
           <div class="row d-flex justify-content-center">
-            <form class="col-md-8 col-lg-7 col-xl-6">
+            <form class="col-md-8 col-lg-7 col-xl-6" method="post">
               <div class="mb-3">
                 <label for="expenseAmount" class="form-label">Amount</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/123.svg" alt="amount" width="25" /></span>
-                  <input type="number" min="1" step="any" class="form-control" id="expenseAmount" required="" />
+                  <input type="number" name="amount" min="1" step="any" class="form-control" id="expenseAmount" required="" />
                 </div>
               </div>
               <div class="mb-3">
                 <label for="expenseDate" class="form-label">Date</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/calendar-date.svg" alt="calendar-date" width="25" /></span>
-                  <input type="date" value="" class="form-control" id="expenseDate" required="" />
+                  <input type="date" name="date" value="" class="form-control" id="expenseDate" required="" />
                 </div>
               </div>
               <div class="mb-3">
