@@ -72,6 +72,14 @@ if (isset($_POST['email'])) {
         $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $query->execute();
 
+        $query = $db->prepare('INSERT INTO `payment_methods_assigned_to_users` (`user_id`, `name`) SELECT :user_id, `name` FROM `payment_methods_default`');
+        $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $query->execute();
+
+        $query = $db->prepare('INSERT INTO `expenses_category_assigned_to_users` (`user_id`, `name`) SELECT :user_id, `name` FROM `expenses_category_default`');
+        $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $query->execute();
+
         $_SESSION['success_reg'] = true;
         header('Location: welcome.php');
       }
