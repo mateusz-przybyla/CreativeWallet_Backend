@@ -44,21 +44,40 @@ if (isset($_POST['email'])) {
   } else {
     require_once '../database.php';
 
-    $emailQuery = $db->prepare('SELECT id FROM users WHERE email = :email');
-    $emailQuery->bindValue(':email', $email, PDO::PARAM_STR);
-    $emailQuery->execute();
+    $query = $db->prepare('SELECT `id` FROM `users` WHERE `email` = :email');
+    $query->bindValue(':email', $email, PDO::PARAM_STR);
+    $query->execute();
 
-    $existEmail = $emailQuery->fetch();
+    $existEmail = $query->fetch();
 
     if ($existEmail) {
       $isCorrect = false;
       $_SESSION['e_email'] = "Account with this email address already exists";
     } else {
       if ($isCorrect) {
-        $query = $db->prepare('INSERT INTO users VALUES (NULL, :username, :email, :password)');
+        $query = $db->prepare('INSERT INTO `users` VALUES (NULL, :username, :email, :password)');
         $query->bindValue(':username', $username, PDO::PARAM_STR);
         $query->bindValue(':email', $email, PDO::PARAM_STR);
         $query->bindValue(':password', $hashedPassword, PDO::PARAM_STR);
+        $query->execute();
+
+        $query = $db->prepare('SELECT `id` FROM `users` WHERE `email` = :email');
+        $query->bindValue(':email', $email, PDO::PARAM_STR);
+        $query->execute();
+
+        $registeredUser = $query->fetch();
+        $userId = $registeredUser['id'];
+
+        $query = $db->prepare('INSERT INTO `incomes_category_assigned_to_users` (`user_id`, `name`) SELECT :user_id, `name` FROM `incomes_category_default`');
+        $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $query->execute();
+
+        $query = $db->prepare('INSERT INTO `payment_methods_assigned_to_users` (`user_id`, `name`) SELECT :user_id, `name` FROM `payment_methods_default`');
+        $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $query->execute();
+
+        $query = $db->prepare('INSERT INTO `expenses_category_assigned_to_users` (`user_id`, `name`) SELECT :user_id, `name` FROM `expenses_category_default`');
+        $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $query->execute();
 
         $_SESSION['success_reg'] = true;
