@@ -37,9 +37,6 @@ session_start();
               <li class="nav-item">
                 <a class="btn btn-primary px-2 ms-lg-3" href="./public/register.php">Create an account</a>
               </li>
-              <li class="nav-item ms-md-2 ms-lg-0 mt-2 mt-md-0">
-                <a class="btn btn-outline-light px-2 ms-lg-3" href="./public/user-page.php">User page - temp!</a>
-              </li>
             </ul>
           </div>
         </div>
