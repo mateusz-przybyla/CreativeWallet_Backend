@@ -8,19 +8,15 @@ if (!isset($_SESSION['logged_id'])) {
     $login = filter_input(INPUT_POST, 'email');
     $password = filter_input(INPUT_POST, 'password');
 
-    $userQuery = $db->prepare('SELECT id, username, password FROM users WHERE email = :login');
-    $userQuery->bindValue(':login', $login, PDO::PARAM_STR);
-    $userQuery->execute();
+    $query = $db->prepare('SELECT `id`, `username`, `password` FROM `users` WHERE `email` = :login');
+    $query->bindValue(':login', $login, PDO::PARAM_STR);
+    $query->execute();
 
-    $user = $userQuery->fetch();
+    $user = $query->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
       $_SESSION['logged_id'] = $user['id'];
       $_SESSION['logged_username'] = $user['username'];
-
-      unset($_SESSION['bad_attempt']);
-      unset($_SESSION['m_login']);
-      unset($_SESSION['m_password']);
 
       header('Location: user-page.php');
     } else {
