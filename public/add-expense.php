@@ -16,7 +16,7 @@ if (!isset($_SESSION['logged_id'])) {
       $_SESSION['e_amount'] = "Amount must be greater than 0";
     }
 
-    echo "Kwota: " . $amount . "<br>";
+    //echo "Kwota: " . $amount . "<br>";
 
     $date = filter_input(INPUT_POST, 'date');
 
@@ -27,14 +27,14 @@ if (!isset($_SESSION['logged_id'])) {
     }
 
     $today = date('Y-m-d');
-    echo "Dzisiaj: " . $today . "<br>";
+    //echo "Dzisiaj: " . $today . "<br>";
 
     if (!validateDate($date, 'Y-m-d') || ($date > $today) || ($date < '2000-01-01')) {
       $isCorrect = false;
       $_SESSION['e_date'] = "Select a date between today and 2000-01-01";
     }
 
-    echo "Data: " . $date . "<br>";
+    //echo "Data: " . $date . "<br>";
 
     $payment = filter_input(INPUT_POST, 'payment');
 
@@ -47,7 +47,7 @@ if (!isset($_SESSION['logged_id'])) {
 
     if (empty($category)) {
       $isCorrect = false;
-      $_SESSION['category'] = "Please choose an expense category";
+      $_SESSION['e_category'] = "Please choose an expense category";
     }
 
     $comment = filter_input(INPUT_POST, 'comment');
@@ -57,15 +57,15 @@ if (!isset($_SESSION['logged_id'])) {
       $_SESSION['e_comment'] = "Comment must be between 0 and 100 characters long";
     }
 
-    echo "Payment: " . $payment . "<br>";
-    echo "Category: " . $category . "<br>";
-    echo "Comment: " . $comment . "<br>";
+    //echo "Payment: " . $payment . "<br>";
+    //echo "Category: " . $category . "<br>";
+    //echo "Comment: " . $comment . "<br>";
 
     if ($isCorrect) {
       require_once '../database.php';
 
       $userId = $_SESSION['logged_id'];
-      echo "userId: " . $userId . "<br>";
+      //echo "userId: " . $userId . "<br>";
 
       $query = $db->prepare('SELECT `id` FROM `payment_methods_assigned_to_users` WHERE `user_id` = :userId AND `name` = :payment');
       $query->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -75,7 +75,7 @@ if (!isset($_SESSION['logged_id'])) {
       $assignedPaymentMethod = $query->fetch();
       $paymentMethodId = $assignedPaymentMethod['id'];
 
-      echo "paymentMethodId: " . $paymentMethodId . "<br>";
+      //echo "paymentMethodId: " . $paymentMethodId . "<br>";
 
       $query = $db->prepare('SELECT `id` FROM `expenses_category_assigned_to_users` WHERE `user_id` = :userId AND `name` = :category');
       $query->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -85,7 +85,7 @@ if (!isset($_SESSION['logged_id'])) {
       $assignedExpenseCategory = $query->fetch();
       $expenseCategoryId = $assignedExpenseCategory['id'];
 
-      echo "expenseCategoryId: " . $expenseCategoryId . "<br>";
+      //echo "expenseCategoryId: " . $expenseCategoryId . "<br>";
 
       $query = $db->prepare('INSERT INTO `expenses` VALUES (NULL, :user_id, :expense_category_assigned_to_user_id, :payment_method_assigned_to_user_id, :amount, :date_of_expense, :expense_comment)');
       $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
@@ -95,6 +95,8 @@ if (!isset($_SESSION['logged_id'])) {
       $query->bindValue(':date_of_expense', $date, PDO::PARAM_STR);
       $query->bindValue(':expense_comment', $comment, PDO::PARAM_STR);
       $query->execute();
+
+      $_SESSION['i_success'] = "Expense added successfully!";
     }
   }
 }
@@ -155,26 +157,44 @@ if (!isset($_SESSION['logged_id'])) {
     <main class="pb-60">
       <div class="container my-5">
         <div class="bg-light-red shadow p-5 rounded-3">
+          <?php
+          if (isset($_SESSION['i_success'])) {
+            echo '<div class="text-success text-center mb-3">' . $_SESSION['i_success'] . '</div>';
+            unset($_SESSION['i_success']);
+          }
+          ?>
           <div class="text-center">
             <h1 class="h3 mb-4">Please enter data for new Expense:</h1>
           </div>
           <div class="row d-flex justify-content-center">
             <form class="col-md-8 col-lg-7 col-xl-6" method="post">
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="expenseAmount" class="form-label">Amount</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/123.svg" alt="amount" width="25" /></span>
                   <input type="number" name="amount" min="1" step="any" class="form-control" id="expenseAmount" required="" />
                 </div>
+                <?php
+                if (isset($_SESSION['e_amount'])) {
+                  echo '<div class="text-danger text-start small">' . $_SESSION['e_amount'] . '</div>';
+                  unset($_SESSION['e_amount']);
+                }
+                ?>
               </div>
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="expenseDate" class="form-label">Date</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/calendar-date.svg" alt="calendar-date" width="25" /></span>
                   <input type="date" name="date" value="" class="form-control" id="expenseDate" required="" />
                 </div>
+                <?php
+                if (isset($_SESSION['e_date'])) {
+                  echo '<div class="text-danger text-start small">' . $_SESSION['e_date'] . '</div>';
+                  unset($_SESSION['e_date']);
+                }
+                ?>
               </div>
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="expensePayment" class="form-label">Method payment</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/credit-card.svg" alt="credit-card" width="25" /></span>
@@ -185,8 +205,14 @@ if (!isset($_SESSION['logged_id'])) {
                     <option>Debit card</option>
                   </select>
                 </div>
+                <?php
+                if (isset($_SESSION['e_payment'])) {
+                  echo '<div class="text-danger text-start small">' . $_SESSION['e_payment'] . '</div>';
+                  unset($_SESSION['e_payment']);
+                }
+                ?>
               </div>
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="expenseCategory" class="form-label">Category</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/tags-fill.svg" alt="tags-fill" width="25" /></span>
@@ -210,13 +236,25 @@ if (!isset($_SESSION['logged_id'])) {
                     <option>Other expenses</option>
                   </select>
                 </div>
+                <?php
+                if (isset($_SESSION['e_category'])) {
+                  echo '<div class="text-danger text-start small">' . $_SESSION['e_category'] . '</div>';
+                  unset($_SESSION['e_category']);
+                }
+                ?>
               </div>
-              <div class="mb-4">
+              <div class="mb-3">
                 <label for="expenseComment" class="form-label">Comment (Optional)</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/chat-dots-fill.svg" alt="chat-dots-fill" width="25" /></span>
                   <textarea class="form-control" name="comment" id="expenseComment" rows="2"></textarea>
                 </div>
+                <?php
+                if (isset($_SESSION['e_comment'])) {
+                  echo '<div class="text-danger text-start small">' . $_SESSION['e_comment'] . '</div>';
+                  unset($_SESSION['e_comment']);
+                }
+                ?>
               </div>
               <div class="container">
                 <div class="row d-flex justify-content-between gy-2">
