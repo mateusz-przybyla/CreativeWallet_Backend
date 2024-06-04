@@ -6,6 +6,22 @@ if (!isset($_SESSION['logged_id'])) {
   exit();
 }
 
+require_once '../database.php';
+
+$userId = $_SESSION['logged_id'];
+
+$query = $db->prepare('SELECT `name` FROM `payment_methods_assigned_to_users` WHERE `user_id` = :userId');
+$query->bindValue(':userId', $userId, PDO::PARAM_INT);
+$query->execute();
+
+$userPayments = $query->fetchAll();
+
+$query = $db->prepare('SELECT `name` FROM `expenses_category_assigned_to_users` WHERE `user_id` = :userId');
+$query->bindValue(':userId', $userId, PDO::PARAM_INT);
+$query->execute();
+
+$userCategories = $query->fetchAll();
+
 if (isset($_POST['amount'])) {
   $isCorrect = true;
 
@@ -17,8 +33,6 @@ if (isset($_POST['amount'])) {
     $_SESSION['e_amount'] = "Amount must be greater than 0";
   }
 
-  //echo "Kwota: " . $amount . "<br>";
-
   $date = filter_input(INPUT_POST, 'date');
 
   function validateDate($date, $format)
@@ -28,14 +42,11 @@ if (isset($_POST['amount'])) {
   }
 
   $today = date('Y-m-d');
-  //echo "Dzisiaj: " . $today . "<br>";
 
   if (!validateDate($date, 'Y-m-d') || ($date > $today) || ($date < '2000-01-01')) {
     $isCorrect = false;
     $_SESSION['e_date'] = "Select a date between today and 2000-01-01";
   }
-
-  //echo "Data: " . $date . "<br>";
 
   $payment = filter_input(INPUT_POST, 'payment');
 
@@ -58,16 +69,7 @@ if (isset($_POST['amount'])) {
     $_SESSION['e_comment'] = "Comment must be between 0 and 100 characters long";
   }
 
-  //echo "Payment: " . $payment . "<br>";
-  //echo "Category: " . $category . "<br>";
-  //echo "Comment: " . $comment . "<br>";
-
   if ($isCorrect) {
-    require_once '../database.php';
-
-    $userId = $_SESSION['logged_id'];
-    //echo "userId: " . $userId . "<br>";
-
     $query = $db->prepare('SELECT `id` FROM `payment_methods_assigned_to_users` WHERE `user_id` = :userId AND `name` = :payment');
     $query->bindValue(':userId', $userId, PDO::PARAM_INT);
     $query->bindValue(':payment', $payment, PDO::PARAM_STR);
@@ -76,8 +78,6 @@ if (isset($_POST['amount'])) {
     $assignedPaymentMethod = $query->fetch();
     $paymentMethodId = $assignedPaymentMethod['id'];
 
-    //echo "paymentMethodId: " . $paymentMethodId . "<br>";
-
     $query = $db->prepare('SELECT `id` FROM `expenses_category_assigned_to_users` WHERE `user_id` = :userId AND `name` = :category');
     $query->bindValue(':userId', $userId, PDO::PARAM_INT);
     $query->bindValue(':category', $category, PDO::PARAM_STR);
@@ -85,8 +85,6 @@ if (isset($_POST['amount'])) {
 
     $assignedExpenseCategory = $query->fetch();
     $expenseCategoryId = $assignedExpenseCategory['id'];
-
-    //echo "expenseCategoryId: " . $expenseCategoryId . "<br>";
 
     $query = $db->prepare('INSERT INTO `expenses` VALUES (NULL, :user_id, :expense_category_assigned_to_user_id, :payment_method_assigned_to_user_id, :amount, :date_of_expense, :expense_comment)');
     $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
@@ -200,9 +198,11 @@ if (isset($_POST['amount'])) {
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/credit-card.svg" alt="credit-card" width="25" /></span>
                   <select class="form-select" name="payment" id="expensePayment" required="">
                     <option value="">Choose...</option>
-                    <option>Cash</option>
-                    <option>Credit card</option>
-                    <option>Debit card</option>
+                    <?php
+                    foreach ($userPayments as $userPayment) {
+                      echo "<option>{$userPayment['name']}</option>";
+                    }
+                    ?>
                   </select>
                 </div>
                 <?php
@@ -218,22 +218,11 @@ if (isset($_POST['amount'])) {
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/tags-fill.svg" alt="tags-fill" width="25" /></span>
                   <select class="form-select" name="category" id="expenseCategory" required="">
                     <option value="">Choose...</option>
-                    <option>Food</option>
-                    <option>House</option>
-                    <option>Transport</option>
-                    <option>Telecom</option>
-                    <option>Health care</option>
-                    <option>Clothing</option>
-                    <option>Hygiene</option>
-                    <option>Children</option>
-                    <option>Entertainment</option>
-                    <option>Trip</option>
-                    <option>Training courses</option>
-                    <option>Books</option>
-                    <option>Debt repayment</option>
-                    <option>Pension</option>
-                    <option>Donation</option>
-                    <option>Other expenses</option>
+                    <?php
+                    foreach ($userCategories as $userCategory) {
+                      echo "<option>{$userCategory['name']}</option>";
+                    }
+                    ?>
                   </select>
                 </div>
                 <?php
