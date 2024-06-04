@@ -44,7 +44,7 @@ if (isset($_SESSION['m_password'])) unset($_SESSION['m_password']);
                 <a class="nav-link active" aria-current="page" href="#">User page</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link disabled" href="#">Add income</a>
+                <a class="nav-link" href="./add-income.php">Add income</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
                 <a class="nav-link" href="./add-expense.php">Add expense</a>
