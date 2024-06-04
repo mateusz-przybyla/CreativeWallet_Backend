@@ -4,100 +4,100 @@ session_start();
 if (!isset($_SESSION['logged_id'])) {
   header('Location: ../index.php');
   exit();
-} else {
-  if (isset($_POST['amount'])) {
-    $isCorrect = true;
+}
 
-    $rawAmount = filter_input(INPUT_POST, 'amount');
-    $amount = number_format($rawAmount, 2, ".", "");
+if (isset($_POST['amount'])) {
+  $isCorrect = true;
 
-    if (!is_numeric($amount) || ($amount <= 0)) {
-      $isCorrect = false;
-      $_SESSION['e_amount'] = "Amount must be greater than 0";
-    }
+  $rawAmount = filter_input(INPUT_POST, 'amount');
+  $amount = number_format($rawAmount, 2, ".", "");
 
-    //echo "Kwota: " . $amount . "<br>";
+  if (!is_numeric($amount) || ($amount <= 0)) {
+    $isCorrect = false;
+    $_SESSION['e_amount'] = "Amount must be greater than 0";
+  }
 
-    $date = filter_input(INPUT_POST, 'date');
+  //echo "Kwota: " . $amount . "<br>";
 
-    function validateDate($date, $format)
-    {
-      $d = DateTime::createFromFormat($format, $date);
-      return $d && $d->format($format) == $date;
-    }
+  $date = filter_input(INPUT_POST, 'date');
 
-    $today = date('Y-m-d');
-    //echo "Dzisiaj: " . $today . "<br>";
+  function validateDate($date, $format)
+  {
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) == $date;
+  }
 
-    if (!validateDate($date, 'Y-m-d') || ($date > $today) || ($date < '2000-01-01')) {
-      $isCorrect = false;
-      $_SESSION['e_date'] = "Select a date between today and 2000-01-01";
-    }
+  $today = date('Y-m-d');
+  //echo "Dzisiaj: " . $today . "<br>";
 
-    //echo "Data: " . $date . "<br>";
+  if (!validateDate($date, 'Y-m-d') || ($date > $today) || ($date < '2000-01-01')) {
+    $isCorrect = false;
+    $_SESSION['e_date'] = "Select a date between today and 2000-01-01";
+  }
 
-    $payment = filter_input(INPUT_POST, 'payment');
+  //echo "Data: " . $date . "<br>";
 
-    if (empty($payment)) {
-      $isCorrect = false;
-      $_SESSION['e_payment'] = "Please choose a payment method";
-    }
+  $payment = filter_input(INPUT_POST, 'payment');
 
-    $category = filter_input(INPUT_POST, 'category');
+  if (empty($payment)) {
+    $isCorrect = false;
+    $_SESSION['e_payment'] = "Please choose a payment method";
+  }
 
-    if (empty($category)) {
-      $isCorrect = false;
-      $_SESSION['e_category'] = "Please choose an expense category";
-    }
+  $category = filter_input(INPUT_POST, 'category');
 
-    $comment = filter_input(INPUT_POST, 'comment');
+  if (empty($category)) {
+    $isCorrect = false;
+    $_SESSION['e_category'] = "Please choose an expense category";
+  }
 
-    if (strlen($comment) > 100) {
-      $isCorrect = false;
-      $_SESSION['e_comment'] = "Comment must be between 0 and 100 characters long";
-    }
+  $comment = filter_input(INPUT_POST, 'comment');
 
-    //echo "Payment: " . $payment . "<br>";
-    //echo "Category: " . $category . "<br>";
-    //echo "Comment: " . $comment . "<br>";
+  if (strlen($comment) > 100) {
+    $isCorrect = false;
+    $_SESSION['e_comment'] = "Comment must be between 0 and 100 characters long";
+  }
 
-    if ($isCorrect) {
-      require_once '../database.php';
+  //echo "Payment: " . $payment . "<br>";
+  //echo "Category: " . $category . "<br>";
+  //echo "Comment: " . $comment . "<br>";
 
-      $userId = $_SESSION['logged_id'];
-      //echo "userId: " . $userId . "<br>";
+  if ($isCorrect) {
+    require_once '../database.php';
 
-      $query = $db->prepare('SELECT `id` FROM `payment_methods_assigned_to_users` WHERE `user_id` = :userId AND `name` = :payment');
-      $query->bindValue(':userId', $userId, PDO::PARAM_INT);
-      $query->bindValue(':payment', $payment, PDO::PARAM_STR);
-      $query->execute();
+    $userId = $_SESSION['logged_id'];
+    //echo "userId: " . $userId . "<br>";
 
-      $assignedPaymentMethod = $query->fetch();
-      $paymentMethodId = $assignedPaymentMethod['id'];
+    $query = $db->prepare('SELECT `id` FROM `payment_methods_assigned_to_users` WHERE `user_id` = :userId AND `name` = :payment');
+    $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $query->bindValue(':payment', $payment, PDO::PARAM_STR);
+    $query->execute();
 
-      //echo "paymentMethodId: " . $paymentMethodId . "<br>";
+    $assignedPaymentMethod = $query->fetch();
+    $paymentMethodId = $assignedPaymentMethod['id'];
 
-      $query = $db->prepare('SELECT `id` FROM `expenses_category_assigned_to_users` WHERE `user_id` = :userId AND `name` = :category');
-      $query->bindValue(':userId', $userId, PDO::PARAM_INT);
-      $query->bindValue(':category', $category, PDO::PARAM_STR);
-      $query->execute();
+    //echo "paymentMethodId: " . $paymentMethodId . "<br>";
 
-      $assignedExpenseCategory = $query->fetch();
-      $expenseCategoryId = $assignedExpenseCategory['id'];
+    $query = $db->prepare('SELECT `id` FROM `expenses_category_assigned_to_users` WHERE `user_id` = :userId AND `name` = :category');
+    $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $query->bindValue(':category', $category, PDO::PARAM_STR);
+    $query->execute();
 
-      //echo "expenseCategoryId: " . $expenseCategoryId . "<br>";
+    $assignedExpenseCategory = $query->fetch();
+    $expenseCategoryId = $assignedExpenseCategory['id'];
 
-      $query = $db->prepare('INSERT INTO `expenses` VALUES (NULL, :user_id, :expense_category_assigned_to_user_id, :payment_method_assigned_to_user_id, :amount, :date_of_expense, :expense_comment)');
-      $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
-      $query->bindValue(':expense_category_assigned_to_user_id', $expenseCategoryId, PDO::PARAM_INT);
-      $query->bindValue(':payment_method_assigned_to_user_id', $paymentMethodId, PDO::PARAM_INT);
-      $query->bindValue(':amount', $amount, PDO::PARAM_STR);
-      $query->bindValue(':date_of_expense', $date, PDO::PARAM_STR);
-      $query->bindValue(':expense_comment', $comment, PDO::PARAM_STR);
-      $query->execute();
+    //echo "expenseCategoryId: " . $expenseCategoryId . "<br>";
 
-      $_SESSION['i_success'] = "Expense added successfully!";
-    }
+    $query = $db->prepare('INSERT INTO `expenses` VALUES (NULL, :user_id, :expense_category_assigned_to_user_id, :payment_method_assigned_to_user_id, :amount, :date_of_expense, :expense_comment)');
+    $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $query->bindValue(':expense_category_assigned_to_user_id', $expenseCategoryId, PDO::PARAM_INT);
+    $query->bindValue(':payment_method_assigned_to_user_id', $paymentMethodId, PDO::PARAM_INT);
+    $query->bindValue(':amount', $amount, PDO::PARAM_STR);
+    $query->bindValue(':date_of_expense', $date, PDO::PARAM_STR);
+    $query->bindValue(':expense_comment', $comment, PDO::PARAM_STR);
+    $query->execute();
+
+    $_SESSION['i_success'] = "Expense added successfully!";
   }
 }
 ?>
@@ -147,7 +147,7 @@ if (!isset($_SESSION['logged_id'])) {
                 <a class="nav-link disabled" href="#">Settings</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="../index.php">Logout</a>
+                <a class="nav-link" href="./logout.php">Logout</a>
               </li>
             </ul>
           </div>
