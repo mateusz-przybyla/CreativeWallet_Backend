@@ -53,7 +53,7 @@ INSERT INTO `expenses_category_default` (`id`, `name`) VALUES
 (1, 'food'),
 (2, 'house'),
 (3, 'transport'),
-(4, 'telecomunications'),
+(4, 'telecom'),
 (5, 'health care'),
 (6, 'clothing'),
 (7, 'hygiene'),
