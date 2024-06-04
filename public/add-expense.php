@@ -96,6 +96,11 @@ if (isset($_POST['amount'])) {
     $query->execute();
 
     $_SESSION['i_success'] = "Expense added successfully!";
+    unset($_SESSION['e_amount']);
+    unset($_SESSION['e_date']);
+    unset($_SESSION['e_payment']);
+    unset($_SESSION['e_category']);
+    unset($_SESSION['e_comment']);
   }
 }
 ?>
@@ -133,10 +138,10 @@ if (isset($_POST['amount'])) {
                 <a class="nav-link" href="./user-page.php">User page</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link disabled" href="#">Add income</a>
+                <a class="nav-link" href="./add-income.php">Add income</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link active" aria-current="page" href="./add-expense.php">Add expense</a>
+                <a class="nav-link active" aria-current="page" href="#">Add expense</a>
               </li>
               <li class="nav-item mb-2 mb-md-0">
                 <a class="nav-link" href="./show-balance.php">Show balance</a>
@@ -247,7 +252,7 @@ if (isset($_POST['amount'])) {
               </div>
               <div class="container">
                 <div class="row d-flex justify-content-between gy-2">
-                  <a href="./user-page.html" class="col-sm-3 btn btn-lg btn-danger">
+                  <a href="./user-page.php" class="col-sm-3 btn btn-lg btn-danger">
                     Cancel
                   </a>
                   <button class="col-sm-3 btn btn-lg btn-success" type="submit">
