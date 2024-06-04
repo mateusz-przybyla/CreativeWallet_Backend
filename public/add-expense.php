@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-require_once '../database.php';
-
 if (!isset($_SESSION['logged_id'])) {
   header('Location: ../index.php');
   exit();
@@ -15,7 +13,7 @@ if (!isset($_SESSION['logged_id'])) {
 
     if (!is_numeric($amount) || ($amount <= 0)) {
       $isCorrect = false;
-      $_SESSION['e_amount'] = "Username must be between 3 and 20 characters long";
+      $_SESSION['e_amount'] = "Amount must be greater than 0";
     }
 
     echo "Kwota: " . $amount . "<br>";
@@ -31,12 +29,73 @@ if (!isset($_SESSION['logged_id'])) {
     $today = date('Y-m-d');
     echo "Dzisiaj: " . $today . "<br>";
 
-    if (!validateDate($date, 'Y-m-d') || ($date > $today)) {
+    if (!validateDate($date, 'Y-m-d') || ($date > $today) || ($date < '2000-01-01')) {
       $isCorrect = false;
-      $_SESSION['e_date'] = "Username must be between 3 and 20 characters long";
+      $_SESSION['e_date'] = "Select a date between today and 2000-01-01";
     }
 
     echo "Data: " . $date . "<br>";
+
+    $payment = filter_input(INPUT_POST, 'payment');
+
+    if (empty($payment)) {
+      $isCorrect = false;
+      $_SESSION['e_payment'] = "Please choose a payment method";
+    }
+
+    $category = filter_input(INPUT_POST, 'category');
+
+    if (empty($category)) {
+      $isCorrect = false;
+      $_SESSION['category'] = "Please choose an expense category";
+    }
+
+    $comment = filter_input(INPUT_POST, 'comment');
+
+    if (strlen($comment) > 100) {
+      $isCorrect = false;
+      $_SESSION['e_comment'] = "Comment must be between 0 and 100 characters long";
+    }
+
+    echo "Payment: " . $payment . "<br>";
+    echo "Category: " . $category . "<br>";
+    echo "Comment: " . $comment . "<br>";
+
+    if ($isCorrect) {
+      require_once '../database.php';
+
+      $userId = $_SESSION['logged_id'];
+      echo "userId: " . $userId . "<br>";
+
+      $query = $db->prepare('SELECT `id` FROM `payment_methods_assigned_to_users` WHERE `user_id` = :userId AND `name` = :payment');
+      $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+      $query->bindValue(':payment', $payment, PDO::PARAM_STR);
+      $query->execute();
+
+      $assignedPaymentMethod = $query->fetch();
+      $paymentMethodId = $assignedPaymentMethod['id'];
+
+      echo "paymentMethodId: " . $paymentMethodId . "<br>";
+
+      $query = $db->prepare('SELECT `id` FROM `expenses_category_assigned_to_users` WHERE `user_id` = :userId AND `name` = :category');
+      $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+      $query->bindValue(':category', $category, PDO::PARAM_STR);
+      $query->execute();
+
+      $assignedExpenseCategory = $query->fetch();
+      $expenseCategoryId = $assignedExpenseCategory['id'];
+
+      echo "expenseCategoryId: " . $expenseCategoryId . "<br>";
+
+      $query = $db->prepare('INSERT INTO `expenses` VALUES (NULL, :user_id, :expense_category_assigned_to_user_id, :payment_method_assigned_to_user_id, :amount, :date_of_expense, :expense_comment)');
+      $query->bindValue(':user_id', $userId, PDO::PARAM_INT);
+      $query->bindValue(':expense_category_assigned_to_user_id', $expenseCategoryId, PDO::PARAM_INT);
+      $query->bindValue(':payment_method_assigned_to_user_id', $paymentMethodId, PDO::PARAM_INT);
+      $query->bindValue(':amount', $amount, PDO::PARAM_STR);
+      $query->bindValue(':date_of_expense', $date, PDO::PARAM_STR);
+      $query->bindValue(':expense_comment', $comment, PDO::PARAM_STR);
+      $query->execute();
+    }
   }
 }
 ?>
@@ -119,7 +178,7 @@ if (!isset($_SESSION['logged_id'])) {
                 <label for="expensePayment" class="form-label">Method payment</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/credit-card.svg" alt="credit-card" width="25" /></span>
-                  <select class="form-select" id="expensePayment" required="">
+                  <select class="form-select" name="payment" id="expensePayment" required="">
                     <option value="">Choose...</option>
                     <option>Cash</option>
                     <option>Credit card</option>
@@ -131,12 +190,12 @@ if (!isset($_SESSION['logged_id'])) {
                 <label for="expenseCategory" class="form-label">Category</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/tags-fill.svg" alt="tags-fill" width="25" /></span>
-                  <select class="form-select" id="expenseCategory" required="">
+                  <select class="form-select" name="category" id="expenseCategory" required="">
                     <option value="">Choose...</option>
                     <option>Food</option>
                     <option>House</option>
                     <option>Transport</option>
-                    <option>Telecommunications</option>
+                    <option>Telecom</option>
                     <option>Health care</option>
                     <option>Clothing</option>
                     <option>Hygiene</option>
@@ -156,7 +215,7 @@ if (!isset($_SESSION['logged_id'])) {
                 <label for="expenseComment" class="form-label">Comment (Optional)</label>
                 <div class="input-group">
                   <span class="input-group-text bg-grey-blue rounded-end-0"><img src="../assets/svg/chat-dots-fill.svg" alt="chat-dots-fill" width="25" /></span>
-                  <textarea class="form-control" id="expenseComment" rows="2"></textarea>
+                  <textarea class="form-control" name="comment" id="expenseComment" rows="2"></textarea>
                 </div>
               </div>
               <div class="container">
