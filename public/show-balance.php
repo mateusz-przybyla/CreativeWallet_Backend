@@ -1,5 +1,28 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['logged_id'])) {
+  header('Location: ../index.php');
+  exit();
+}
+
+require_once '../database.php';
+
+$userId = $_SESSION['logged_id'];
+
+$query = $db->prepare('SELECT `name`, SUM(`amount`) AS incomeSum FROM  `incomes`, `incomes_category_assigned_to_users` WHERE `incomes`.`income_category_assigned_to_user_id` = `incomes_category_assigned_to_users`.`id`
+AND `incomes`.`user_id` = :userId GROUP BY `income_category_assigned_to_user_id` ORDER BY incomeSum DESC');
+$query->bindValue(':userId', $userId, PDO::PARAM_INT);
+$query->execute();
+
+$incomes = $query->fetchAll();
+
+$query = $db->prepare('SELECT `name`, SUM(`amount`) AS expenseSum FROM  `expenses`, `expenses_category_assigned_to_users` WHERE `expenses`.`expense_category_assigned_to_user_id` = `expenses_category_assigned_to_users`.`id`
+AND `expenses`.`user_id` = :userId GROUP BY `expense_category_assigned_to_user_id` ORDER BY expenseSum DESC');
+$query->bindValue(':userId', $userId, PDO::PARAM_INT);
+$query->execute();
+
+$expenses = $query->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +42,7 @@ session_start();
     <header>
       <nav class="navbar navbar-expand-xl navbar-dark bg-dark mx-2 rounded-3" aria-label="toggle navigation">
         <div class="container">
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" href="./user-page.php">
             <svg xmlns="http://www.w3.org/2000/svg" height="30" fill="currentColor" class="bi bi-wallet-fill me-1 mb-1" viewBox="0 0 16 16">
               <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v2h6a.5.5 0 0 1 .5.5c0 .253.08.644.306.958.207.288.557.542 1.194.542s.987-.254 1.194-.542C9.42 6.644 9.5 6.253 9.5 6a.5.5 0 0 1 .5-.5h6v-2A1.5 1.5 0 0 0 14.5 2z" />
               <path d="M16 6.5h-5.551a2.7 2.7 0 0 1-.443 1.042C9.613 8.088 8.963 8.5 8 8.5s-1.613-.412-2.006-.958A2.7 2.7 0 0 1 5.551 6.5H0v6A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5z" />
@@ -120,7 +143,6 @@ session_start();
               <p class="fs-5 mb-3 pe-2">Balance sheet for the period:</p>
               <p class="fs-5 lead" id="changePeriod"></p>
             </div>
-
             <p class="fs-5 lead" id="showDateRange"></p>
           </div>
         </div>
@@ -158,32 +180,27 @@ session_start();
                   <tr class="bg-grey-blue">
                     <th scope="col">#</th>
                     <th scope="col">Category</th>
-                    <th scope="col">Date</th>
                     <th scope="col">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
+                  <?php
+                  $incomeIndex = 1;
+                  foreach ($incomes as $income) {
+                    echo "<tr><th scope='row'>{$incomeIndex}</th><td>{$income['name']}</td><td>{$income['incomeSum']}</td></tr>";
+                    $incomeIndex++;
+                  }
+                  ?>
                   <tr>
-                    <th scope="row">1</th>
-                    <td>Salary</td>
-                    <td>2024-05-01</td>
-                    <td>1.00</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">2</th>
-                    <td>Bank interest</td>
-                    <td>2024-05-01</td>
-                    <td>1.00</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">3</th>
-                    <td>Allegro sale</td>
-                    <td>2024-05-01</td>
-                    <td>1.00</td>
-                  </tr>
-                  <tr>
-                    <td colspan="3" class="text-center">Total incomes</td>
-                    <td>1.00</td>
+                    <td colspan="2" class="text-center">Total incomes</td>
+                    <?php
+                    $totalIncomes = 0;
+                    foreach ($incomes as $income) {
+                      $totalIncomes += $income['incomeSum'];
+                    }
+                    $totalIncomes = number_format($totalIncomes, 2, ".", "");
+                    echo "<th>{$totalIncomes}</th>";
+                    ?>
                   </tr>
                 </tbody>
               </table>
@@ -198,32 +215,27 @@ session_start();
                   <tr class="bg-grey-blue">
                     <th scope="col">#</th>
                     <th scope="col">Category</th>
-                    <th scope="col">Date</th>
                     <th scope="col">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
+                  <?php
+                  $expenseIndex = 1;
+                  foreach ($expenses as $expense) {
+                    echo "<tr><th scope='row'>{$expenseIndex}</th><td>{$expense['name']}</td><td>{$expense['expenseSum']}</td></tr>";
+                    $expenseIndex++;
+                  }
+                  ?>
                   <tr>
-                    <th scope="row">1</th>
-                    <td>House</td>
-                    <td>2024-05-01</td>
-                    <td>1.00</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">2</th>
-                    <td>Hygiene</td>
-                    <td>2024-05-01</td>
-                    <td>1.00</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">3</th>
-                    <td>Transport</td>
-                    <td>2024-05-01</td>
-                    <td>1.00</td>
-                  </tr>
-                  <tr>
-                    <td colspan="3" class="text-center">Total expenses</td>
-                    <td>1.00</td>
+                    <td colspan="2" class="text-center">Total expenses</td>
+                    <?php
+                    $totalExpenses = 0;
+                    foreach ($expenses as $expense) {
+                      $totalExpenses += $expense['expenseSum'];
+                    }
+                    $totalExpenses = number_format($totalExpenses, 2, ".", "");
+                    echo "<th>{$totalExpenses}</th>";
+                    ?>
                   </tr>
                 </tbody>
               </table>
