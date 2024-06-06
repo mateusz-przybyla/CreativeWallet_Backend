@@ -16,6 +16,12 @@ $query->bindValue(':userId', $userId, PDO::PARAM_INT);
 $query->execute();
 
 $incomes = $query->fetchAll();
+$totalIncomes = 0;
+
+foreach ($incomes as $income) {
+  $totalIncomes += $income['incomeSum'];
+}
+$_SESSION['total_incomes'] = number_format($totalIncomes, 2, ".", "");
 
 $query = $db->prepare('SELECT `name`, SUM(`amount`) AS expenseSum FROM  `expenses`, `expenses_category_assigned_to_users` WHERE `expenses`.`expense_category_assigned_to_user_id` = `expenses_category_assigned_to_users`.`id`
 AND `expenses`.`user_id` = :userId GROUP BY `expense_category_assigned_to_user_id` ORDER BY expenseSum DESC');
@@ -23,6 +29,14 @@ $query->bindValue(':userId', $userId, PDO::PARAM_INT);
 $query->execute();
 
 $expenses = $query->fetchAll();
+$totalExpenses = 0;
+
+foreach ($expenses as $expense) {
+  $totalExpenses += $expense['expenseSum'];
+}
+$_SESSION['total_expenses'] = number_format($totalExpenses, 2, ".", "");
+
+$_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
 ?>
 
 <!DOCTYPE html>
@@ -157,13 +171,19 @@ $expenses = $query->fetchAll();
             <hr class="" />
           </div>
           <div class="text-center">
-            <p class="fs-5 text-success" id="">
+            <?php
+            echo $_SESSION['balance'] > 0 ? '<p class="fs-5 text-success">
               Congratulations! You manage your finances very well :)
+            </p>' : '<p class="fs-5 text-danger">
+              Be carefull! You are getting into debt :(
+            </p>'
+            ?>
+            <p class="lead fs-2"><?php if (isset($_SESSION['balance'])) {
+                                    echo "Balance: " . number_format($_SESSION['balance'], 2, ",", " ") . " zł";
+                                    unset($_SESSION['balance']);
+                                  }
+                                  ?>
             </p>
-            <p class="fs-5 text-danger" id="">
-              Be carefull! You're getting into debt :(
-            </p>
-            <p class="lead fs-2">Balance: 0,00 zł</p>
           </div>
         </div>
       </section>
@@ -194,12 +214,7 @@ $expenses = $query->fetchAll();
                   <tr>
                     <td colspan="2" class="text-center">Total incomes</td>
                     <?php
-                    $totalIncomes = 0;
-                    foreach ($incomes as $income) {
-                      $totalIncomes += $income['incomeSum'];
-                    }
-                    $totalIncomes = number_format($totalIncomes, 2, ".", "");
-                    echo "<th>{$totalIncomes}</th>";
+                    echo "<th>{$_SESSION['total_incomes']}</th>";
                     ?>
                   </tr>
                 </tbody>
@@ -229,12 +244,7 @@ $expenses = $query->fetchAll();
                   <tr>
                     <td colspan="2" class="text-center">Total expenses</td>
                     <?php
-                    $totalExpenses = 0;
-                    foreach ($expenses as $expense) {
-                      $totalExpenses += $expense['expenseSum'];
-                    }
-                    $totalExpenses = number_format($totalExpenses, 2, ".", "");
-                    echo "<th>{$totalExpenses}</th>";
+                    echo "<th>{$_SESSION['total_expenses']}</th>";
                     ?>
                   </tr>
                 </tbody>
