@@ -30,12 +30,14 @@ $query->execute();
 
 $expenses = $query->fetchAll();
 $totalExpenses = 0;
+$dataPoints = [];
 
 foreach ($expenses as $expense) {
   $totalExpenses += $expense['expenseSum'];
+  $point = ['y' => $expense['expenseSum'], 'label' => $expense['name']];
+  array_push($dataPoints, $point);
 }
 $_SESSION['total_expenses'] = number_format($totalExpenses, 2, ".", "");
-
 $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
 ?>
 
@@ -221,7 +223,7 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
               </table>
             </div>
             <div class="col-lg-6">
-              <table class="table table-striped table-bordered table-hover">
+              <table class="table table-striped table-bordered table-hover" id="expensesByCategoryTable">
                 <caption class="h3">
                   <img class="mb-3" src="../assets/svg/dash-circle-dotted.svg" alt="dash-circle-dotted" height="50" />
                   <p class="h3 mb-3">Expenses by category</p>
@@ -286,6 +288,25 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
   <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="../show-balance.js" type="text/javascript"></script>
+
+  <script>
+    const dps = <?php echo json_encode($dataPoints); ?>;
+
+    var chart = new CanvasJS.Chart("chartContainer", {
+      animationEnabled: true,
+      title: {
+        text: "",
+      },
+      data: [{
+        type: "pie",
+        startAngle: 240,
+        yValueFormatString: '##0.00" PLN"',
+        indexLabel: "{label} {y}",
+        dataPoints: dps,
+      }, ],
+    });
+    chart.render();
+  </script>
 </body>
 
 </html>
