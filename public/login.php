@@ -106,10 +106,10 @@ if (!isset($_SESSION['logged_id'])) {
             ?>
             <div class="checkbox my-3">
               <label>
-                <input type="checkbox" value="remember-me" /> Remember me
+                <input type="checkbox" id="remember-me" /> Remember me
               </label>
             </div>
-            <button class="w-100 btn btn-lg btn-success" type="submit">
+            <button class="w-100 btn btn-lg btn-success" type="submit" id="login-submit">
               Sign in
             </button>
             <p class="pt-3 my-0">
@@ -137,6 +137,7 @@ if (!isset($_SESSION['logged_id'])) {
     </footer>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="../login.js" type="text/javascript"></script>
 </body>
 
 </html>
