@@ -13,17 +13,17 @@ if (isset($_POST['period'])) {
   $period = filter_input(INPUT_POST, 'period');
 
   if ($period == 'currentMonth') {
-    echo 'currentM';
     $startDate = date('Y-m-d', strtotime("first day of this month"));
     $endDate = date('Y-m-d');
+    $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
   } else if ($period == 'previousMonth') {
-    echo 'previousM';
     $startDate = date('Y-m-d', strtotime("first day of previous month"));
     $endDate = date('Y-m-d', strtotime("last day of previous month"));
+    $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
   } else if ($period == 'currentYear') {
-    echo 'currentY';
     $startDate = date('Y-m-d', strtotime("first day of january this year"));
     $endDate = date('Y-m-d');
+    $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
   }
 } else if (isset($_POST['customStartDate']) && isset($_POST['customEndDate'])) {
   $startDate = filter_input(INPUT_POST, 'customStartDate');
@@ -34,13 +34,12 @@ if (isset($_POST['period'])) {
     $startDate = $endDate;
     $endDate = $temp;
   }
+  $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
 } else if (!isset($_POST['period'])) {
   $startDate = date('Y-m-d', strtotime("first day of this month"));
   $endDate = date('Y-m-d');
+  $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
 }
-
-echo '<br>' . $startDate . '<br>';
-echo $endDate . '<br>';
 
 require_once '../database.php';
 
@@ -201,7 +200,12 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
               <p class="fs-5 mb-3 pe-2">Balance sheet for the period:</p>
               <p class="fs-5 lead" id="changePeriod"></p>
             </div>
-            <p class="fs-5 lead" id="showDateRange"></p>
+            <?php
+            if (isset($_SESSION['m_period'])) {
+              echo '<p class="fs-5 lead" id="showDateRange">' . $_SESSION['m_period'] . '</p>';
+              unset($_SESSION['m_period']);
+            }
+            ?>
           </div>
         </div>
       </section>

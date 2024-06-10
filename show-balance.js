@@ -1,7 +1,7 @@
 window.onload = function () {};
 
 /* Operation on dates */
-
+/*
 function readDay() {
   const date = new Date();
   var day = date.getDate();
@@ -108,9 +108,9 @@ function calculateHowManyDaysPerPreviousMonth() {
   }
   return days;
 }
-
+*/
 /* Drop-down button */
-
+/*
 document.getElementById("currentMonth").addEventListener("click", function () {
   var beginningOfCurrentMonth = readYear() + "." + readMonth() + ".01";
 
@@ -155,7 +155,7 @@ document.getElementById("customPeriod").addEventListener("click", function () {
       "(from " + fromDate + " to " + toDate + ")";
   });
 });
-
+*/
 /* Scroll to top button */
 
 const btn = document.getElementById("scrollToTop");
