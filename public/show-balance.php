@@ -6,13 +6,51 @@ if (!isset($_SESSION['logged_id'])) {
   exit();
 }
 
+$startDate = "";
+$endDate = "";
+
+if (isset($_POST['period'])) {
+  $period = filter_input(INPUT_POST, 'period');
+
+  if ($period == 'currentMonth') {
+    echo 'currentM';
+    $startDate = date('Y-m-d', strtotime("first day of this month"));
+    $endDate = date('Y-m-d');
+  } else if ($period == 'previousMonth') {
+    echo 'previousM';
+    $startDate = date('Y-m-d', strtotime("first day of previous month"));
+    $endDate = date('Y-m-d', strtotime("last day of previous month"));
+  } else if ($period == 'currentYear') {
+    echo 'currentY';
+    $startDate = date('Y-m-d', strtotime("first day of january this year"));
+    $endDate = date('Y-m-d');
+  }
+} else if (isset($_POST['customStartDate']) && isset($_POST['customEndDate'])) {
+  $startDate = filter_input(INPUT_POST, 'customStartDate');
+  $endDate = filter_input(INPUT_POST, 'customEndDate');
+
+  if ($startDate > $endDate) {
+    $temp = $startDate;
+    $startDate = $endDate;
+    $endDate = $temp;
+  }
+} else if (!isset($_POST['period'])) {
+  $startDate = date('Y-m-d', strtotime("first day of this month"));
+  $endDate = date('Y-m-d');
+}
+
+echo '<br>' . $startDate . '<br>';
+echo $endDate . '<br>';
+
 require_once '../database.php';
 
 $userId = $_SESSION['logged_id'];
 
 $query = $db->prepare('SELECT `name`, SUM(`amount`) AS incomeSum FROM  `incomes`, `incomes_category_assigned_to_users` WHERE `incomes`.`income_category_assigned_to_user_id` = `incomes_category_assigned_to_users`.`id`
-AND `incomes`.`user_id` = :userId GROUP BY `income_category_assigned_to_user_id` ORDER BY incomeSum DESC');
+AND `incomes`.`user_id` = :userId AND `incomes`.`date_of_income` BETWEEN :startDate AND :endDate GROUP BY `income_category_assigned_to_user_id` ORDER BY incomeSum DESC');
 $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+$query->bindValue(':startDate', $startDate, PDO::PARAM_STR);
+$query->bindValue(':endDate', $endDate, PDO::PARAM_STR);
 $query->execute();
 
 $incomes = $query->fetchAll();
@@ -24,8 +62,10 @@ foreach ($incomes as $income) {
 $_SESSION['total_incomes'] = number_format($totalIncomes, 2, ".", "");
 
 $query = $db->prepare('SELECT `name`, SUM(`amount`) AS expenseSum FROM  `expenses`, `expenses_category_assigned_to_users` WHERE `expenses`.`expense_category_assigned_to_user_id` = `expenses_category_assigned_to_users`.`id`
-AND `expenses`.`user_id` = :userId GROUP BY `expense_category_assigned_to_user_id` ORDER BY expenseSum DESC');
+AND `expenses`.`user_id` = :userId AND `expenses`.`date_of_expense` BETWEEN :startDate AND :endDate GROUP BY `expense_category_assigned_to_user_id` ORDER BY expenseSum DESC');
 $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+$query->bindValue(':startDate', $startDate, PDO::PARAM_STR);
+$query->bindValue(':endDate', $endDate, PDO::PARAM_STR);
 $query->execute();
 
 $expenses = $query->fetchAll();
@@ -105,26 +145,28 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
               <button class="btn btn-secondary bg-grey-blue dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Choose time period
               </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" id="currentMonth" href="#">Current month</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" id="previousMonth" href="#">Previous month</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" id="currentYear" href="#">Current year</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#balanceModal" id="customPeriod" href="#">Custom period</a>
-                </li>
-              </ul>
+              <form method="post">
+                <ul class="dropdown-menu">
+                  <li>
+                    <button class="dropdown-item active" id="currentMonth" name="period" value="currentMonth">Current month </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" id="previousMonth" name="period" value="previousMonth">Previous month</button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" id="currentYear" name="period" value="currentYear">Current year</button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#balanceModal" id="customPeriod">Custom period</button>
+                  </li>
+                </ul>
+              </form>
             </div>
           </div>
           <!-- Modal -->
           <div class="modal fade" id="balanceModal" tabindex="-1" aria-labelledby="balanceModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-              <div class="modal-content">
+              <form method="post" class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title fs-5" id="balanceModalLabel">
                     Choose a date range:
@@ -135,11 +177,11 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
                   <div class="d-flex">
                     <div class="col-6">
                       <p>From:</p>
-                      <input type="date" value="" class="form-control me-1" id="balanceFromDate" />
+                      <input type="date" name="customStartDate" class="form-control me-1" id="balanceFromDate" />
                     </div>
                     <div class="col-6">
                       <p>To:</p>
-                      <input type="date" value="" class="form-control ms-1" id="balanceToDate" />
+                      <input type="date" name="customEndDate" class="form-control ms-1" id="balanceToDate" />
                     </div>
                   </div>
                 </div>
@@ -147,11 +189,11 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Close
                   </button>
-                  <button type="button" id="saveBtn" class="btn btn-primary" data-bs-dismiss="modal">
+                  <button id="saveBtn" class="btn btn-primary" data-bs-dismiss="modal">
                     Save
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="text-center">
@@ -174,7 +216,7 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
           </div>
           <div class="text-center">
             <?php
-            echo $_SESSION['balance'] > 0 ? '<p class="fs-5 text-success">
+            echo $_SESSION['balance'] >= 0 ? '<p class="fs-5 text-success">
               Congratulations! You manage your finances very well :)
             </p>' : '<p class="fs-5 text-danger">
               Be carefull! You are getting into debt :(
