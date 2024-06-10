@@ -1,125 +1,7 @@
-/* Pie chart */
-/*
-window.onload = function () {
-  var dps = [];
-
-  $.getJSON("show-balance.php", function (result) {
-    console.log(result.length);
-    for (var i = 0; i < result.length; i++) {
-      dps.push({ y: result[i].y, label: result[i].label });
-      console.log(result[i].y);
-      console.log(result.length);
-    }
-  })
-    .done(function () {
-      alert("second success");
-    })
-    .fail(function () {
-      alert("error");
-    })
-    .always(function () {
-      alert("complete");
-    });
-
-  console.log(dps["food"]);
-
-  var chart = new CanvasJS.Chart("chartContainer", {
-    animationEnabled: true,
-    title: {
-      text: "",
-    },
-    data: [
-      {
-        type: "pie",
-        startAngle: 240,
-        yValueFormatString: '##0.00"PLN"',
-        indexLabel: "{label} {y}",
-        dataPoints: dps,
-      },
-    ],
-  });
-  chart.render();
-};
-
-  fetch("show-balance.php")
-    .then((response) => {
-      if (!response.ok) {
-        // Before parsing (i.e. decoding) the JSON data,
-        // check for any errors.
-        // In case of an error, throw.
-        throw new Error("Something went wrong!");
-      }
-
-      return response.json(); // Parse the JSON data.
-    })
-    .then((result) => {
-      // This is where you handle what to do with the response.
-      alert(result); // Will alert: 42
-
-      console.log(result.length);
-      for (var i = 0; i < result.length; i++) {
-        dps.push({ y: result[i].y, label: result[i].label });
-        console.log(result[i].y);
-        console.log(result.length);
-      }
-    })
-    .catch((error) => {
-      // This is where you handle errors.
-      alert(error);
-    });
-
-  var chart = new CanvasJS.Chart("chartContainer", {
-    animationEnabled: true,
-    title: {
-      text: "",
-    },
-    data: [
-      {
-        type: "pie",
-        startAngle: 240,
-        yValueFormatString: '##0.00"PLN"',
-        indexLabel: "{label} {y}",
-        dataPoints: dps,
-      },
-    ],
-  });
-  chart.render();
-};
-
-  $.ajax("show-balance.php", {
-    success: function (result) {
-      alert("AJAX call was successful!");
-      alert("Data from the server" + result);
-      for (var i = 0; i < result.length; i++) {
-        dps.push({ y: result[i].y, label: result[i].label });
-        //console.log(result[i].y);
-      }
-      //console.log(result.length);
-    },
-    error: function () {
-      alert("There was some error performing the AJAX call!");
-    },
-  });
-  var chart = new CanvasJS.Chart("chartContainer", {
-    animationEnabled: true,
-    title: {
-      text: "",
-    },
-    data: [
-      {
-        type: "pie",
-        startAngle: 240,
-        yValueFormatString: '##0.00"PLN"',
-        indexLabel: "{label} {y}",
-        dataPoints: dps,
-      },
-    ],
-  });
-  chart.render();
-};
+window.onload = function () {};
 
 /* Operation on dates */
-
+/*
 function readDay() {
   const date = new Date();
   var day = date.getDate();
@@ -226,9 +108,9 @@ function calculateHowManyDaysPerPreviousMonth() {
   }
   return days;
 }
-
+*/
 /* Drop-down button */
-
+/*
 document.getElementById("currentMonth").addEventListener("click", function () {
   var beginningOfCurrentMonth = readYear() + "." + readMonth() + ".01";
 
@@ -273,7 +155,7 @@ document.getElementById("customPeriod").addEventListener("click", function () {
       "(from " + fromDate + " to " + toDate + ")";
   });
 });
-
+*/
 /* Scroll to top button */
 
 const btn = document.getElementById("scrollToTop");
