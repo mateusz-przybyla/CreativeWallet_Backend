@@ -74,8 +74,11 @@ if (isset($_SESSION['m_password'])) unset($_SESSION['m_password']);
           <p class="col-lg-8 mx-auto fs-3 py-2">
             <strong>What do you want to change about your finances today?</strong>
           </p>
-          <p class="col-lg-8 mx-auto fs-5">
-            Your account balance is: (value is under constraction)
+          <p class="col-lg-4 mx-auto fs-5">
+            <i>A budget is telling your money where to go instead of wondering where it went.</i>
+          </p>
+          <p class="col-lg-4 mx-auto fs-5">
+            <i>John C. Maxwell</i>
           </p>
         </div>
       </div>
