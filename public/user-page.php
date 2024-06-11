@@ -7,8 +7,6 @@ if (!isset($_SESSION['logged_id'])) {
 }
 
 if (isset($_SESSION['bad_attempt'])) unset($_SESSION['bad_attempt']);
-if (isset($_SESSION['m_login'])) unset($_SESSION['m_login']);
-if (isset($_SESSION['m_password'])) unset($_SESSION['m_password']);
 ?>
 
 <!DOCTYPE html>

@@ -20,8 +20,6 @@ if (!isset($_SESSION['logged_id'])) {
 
       header('Location: user-page.php');
     } else {
-      $_SESSION['m_login'] = $login;
-      $_SESSION['m_password'] = $password;
       $_SESSION['bad_attempt'] = "Invalid login or password";
     }
   }
@@ -69,15 +67,11 @@ if (!isset($_SESSION['logged_id'])) {
                 <img src="../assets/svg/envelope.svg" alt="envelope" height="25" />
               </figure>
               <div class="form-floating mb-2 w-100">
-                <input type="email" name="email" value="<?php
-                                                        if (isset($_SESSION['m_login'])) {
-                                                          echo $_SESSION['m_login'];
-                                                          unset($_SESSION['m_login']);
-                                                        } ?>" class="form-control rounded-0 rounded-end-2 <?php
-                                                                                                          if (isset($_SESSION['bad_attempt'])) {
-                                                                                                            echo "is-invalid";
-                                                                                                          }
-                                                                                                          ?>" id="login-email" placeholder="name@example.com" />
+                <input type="email" name="email" class="form-control rounded-0 rounded-end-2 <?php
+                                                                                              if (isset($_SESSION['bad_attempt'])) {
+                                                                                                echo "is-invalid";
+                                                                                              }
+                                                                                              ?>" id="login-email" placeholder="name@example.com" />
                 <label for="login-email">Email</label>
               </div>
             </div>
@@ -86,15 +80,11 @@ if (!isset($_SESSION['logged_id'])) {
                 <img src="../assets/svg/lock-fill.svg" alt="lock-fill" height="25" />
               </figure>
               <div class="form-floating w-100">
-                <input type="password" name="password" value="<?php
-                                                              if (isset($_SESSION['m_password'])) {
-                                                                echo $_SESSION['m_password'];
-                                                                unset($_SESSION['m_password']);
-                                                              } ?>" class="form-control rounded-0 rounded-end-2 <?php
-                                                                                                                if (isset($_SESSION['bad_attempt'])) {
-                                                                                                                  echo "is-invalid";
-                                                                                                                }
-                                                                                                                ?>" id="login-password" placeholder="Password" />
+                <input type="password" name="password" class="form-control rounded-0 rounded-end-2 <?php
+                                                                                                    if (isset($_SESSION['bad_attempt'])) {
+                                                                                                      echo "is-invalid";
+                                                                                                    }
+                                                                                                    ?>" id="login-password" placeholder="Password" />
                 <label for="login-password">Password</label>
               </div>
             </div>
