@@ -1,5 +1,3 @@
-window.onload = function () {};
-
 /* Operation on dates */
 /*
 function readDay() {

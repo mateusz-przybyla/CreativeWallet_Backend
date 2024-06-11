@@ -16,14 +16,17 @@ if (isset($_POST['period'])) {
     $startDate = date('Y-m-d', strtotime("first day of this month"));
     $endDate = date('Y-m-d');
     $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
+    $_SESSION['m_active1'] = "active";
   } else if ($period == 'previousMonth') {
     $startDate = date('Y-m-d', strtotime("first day of previous month"));
     $endDate = date('Y-m-d', strtotime("last day of previous month"));
     $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
+    $_SESSION['m_active2'] = "active";
   } else if ($period == 'currentYear') {
     $startDate = date('Y-m-d', strtotime("first day of january this year"));
     $endDate = date('Y-m-d');
     $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
+    $_SESSION['m_active3'] = "active";
   }
 } else if (isset($_POST['customStartDate']) && isset($_POST['customEndDate'])) {
   $startDate = filter_input(INPUT_POST, 'customStartDate');
@@ -35,10 +38,12 @@ if (isset($_POST['period'])) {
     $endDate = $temp;
   }
   $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
+  $_SESSION['m_active4'] = "active";
 } else if (!isset($_POST['period'])) {
   $startDate = date('Y-m-d', strtotime("first day of this month"));
   $endDate = date('Y-m-d');
   $_SESSION['m_period'] = "(from {$startDate} to {$endDate})";
+  $_SESSION['m_active1'] = "active";
 }
 
 require_once '../database.php';
@@ -147,16 +152,32 @@ $_SESSION['balance'] = $_SESSION['total_incomes'] - $_SESSION['total_expenses'];
               <form method="post">
                 <ul class="dropdown-menu">
                   <li>
-                    <button class="dropdown-item active" id="currentMonth" name="period" value="currentMonth">Current month </button>
+                    <button class="dropdown-item <?php
+                                                  if (isset($_SESSION['m_active1'])) {
+                                                    echo $_SESSION['m_active1'];
+                                                    unset($_SESSION['m_active1']);
+                                                  } ?>" id="currentMonth" name="period" value="currentMonth">Current month </button>
                   </li>
                   <li>
-                    <button class="dropdown-item" id="previousMonth" name="period" value="previousMonth">Previous month</button>
+                    <button class="dropdown-item <?php
+                                                  if (isset($_SESSION['m_active2'])) {
+                                                    echo $_SESSION['m_active2'];
+                                                    unset($_SESSION['m_active2']);
+                                                  } ?>" id="previousMonth" name="period" value="previousMonth">Previous month</button>
                   </li>
                   <li>
-                    <button class="dropdown-item" id="currentYear" name="period" value="currentYear">Current year</button>
+                    <button class="dropdown-item <?php
+                                                  if (isset($_SESSION['m_active3'])) {
+                                                    echo $_SESSION['m_active3'];
+                                                    unset($_SESSION['m_active3']);
+                                                  } ?>" id="currentYear" name="period" value="currentYear">Current year</button>
                   </li>
                   <li>
-                    <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#balanceModal" id="customPeriod">Custom period</button>
+                    <button type="button" class="dropdown-item <?php
+                                                                if (isset($_SESSION['m_active4'])) {
+                                                                  echo $_SESSION['m_active4'];
+                                                                  unset($_SESSION['m_active4']);
+                                                                } ?>" data-bs-toggle="modal" data-bs-target="#balanceModal" id="customPeriod">Custom period</button>
                   </li>
                 </ul>
               </form>
