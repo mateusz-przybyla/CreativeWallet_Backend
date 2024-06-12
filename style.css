@@ -65,8 +65,8 @@ caption {
     width: 44px;
     border-radius: 8px;
     position: fixed;
-    right: 16px;
-    bottom: 16px;
+    right: 10px;
+    bottom: 50px;
     cursor: pointer;
   }
 }
