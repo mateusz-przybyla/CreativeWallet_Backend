@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (isset($_SESSION['logged_id'])) {
+  header('Location: ./user-page.php');
+  exit();
+}
+
 if (isset($_POST['email'])) {
   $isCorrect = true;
 

@@ -1,27 +1,30 @@
 <?php
 session_start();
 
-require_once '../database.php';
+if (isset($_SESSION['logged_id'])) {
+  header('Location: ./user-page.php');
+  exit();
+}
 
-if (!isset($_SESSION['logged_id'])) {
-  if (isset($_POST['email'])) {
-    $login = filter_input(INPUT_POST, 'email');
-    $password = filter_input(INPUT_POST, 'password');
+if (isset($_POST['email'])) {
+  $login = filter_input(INPUT_POST, 'email');
+  $password = filter_input(INPUT_POST, 'password');
 
-    $query = $db->prepare('SELECT `id`, `username`, `password` FROM `users` WHERE `email` = :login');
-    $query->bindValue(':login', $login, PDO::PARAM_STR);
-    $query->execute();
+  require_once '../database.php';
 
-    $user = $query->fetch();
+  $query = $db->prepare('SELECT `id`, `username`, `password` FROM `users` WHERE `email` = :login');
+  $query->bindValue(':login', $login, PDO::PARAM_STR);
+  $query->execute();
 
-    if ($user && password_verify($password, $user['password'])) {
-      $_SESSION['logged_id'] = $user['id'];
-      $_SESSION['logged_username'] = $user['username'];
+  $user = $query->fetch();
 
-      header('Location: user-page.php');
-    } else {
-      $_SESSION['bad_attempt'] = "Invalid login or password";
-    }
+  if ($user && password_verify($password, $user['password'])) {
+    $_SESSION['logged_id'] = $user['id'];
+    $_SESSION['logged_username'] = $user['username'];
+
+    header('Location: user-page.php');
+  } else {
+    $_SESSION['bad_attempt'] = "Invalid login or password";
   }
 }
 ?>
