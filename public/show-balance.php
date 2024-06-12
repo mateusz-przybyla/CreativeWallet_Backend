@@ -32,6 +32,14 @@ if (isset($_POST['period'])) {
   $startDate = filter_input(INPUT_POST, 'customStartDate');
   $endDate = filter_input(INPUT_POST, 'customEndDate');
 
+  $today = date('Y-m-d');
+
+  if ($startDate > $today) {
+    $startDate = $today;
+  }
+  if ($endDate > $today) {
+    $endDate = $today;
+  }
   if ($startDate > $endDate) {
     $temp = $startDate;
     $startDate = $endDate;
