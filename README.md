@@ -1,6 +1,6 @@
 # CreativeWallet - Frontend + Backend
 
-2nd stage of Web Application using basic PHP and SQL language.
+2nd stage of Web Application using basic PHP and SQL languages.
 
 ## Table of contents
 
@@ -20,7 +20,7 @@ CreativeWallet is a web app and a new version of PersonalBudget app written in C
 Frontend was designed using the Bootstrap library and backend using PHP and SQL.
 
 An application allows you to keep records of your expenses and incomes.
-Data are saved to the database (phpMyAdmin).
+Data are saved to the database (MySQL database with phpMyAdmin).
 
 How does it work?
 
@@ -38,13 +38,16 @@ Other functionalities:
 
 ### Screenshots
 
-- Sign up:\
+- Sign up:
+
   ![](./images/sign_up.jpg)
 
-- Adding new income:\
+- Adding new income:
+
   ![](./images/add_income.jpg)
 
-- Show balance - list of categories and expenses chart:\
+- Show balance - list of categories and expenses chart:
+
   ![](./images/show_balance.jpg)
 
 ## My process
